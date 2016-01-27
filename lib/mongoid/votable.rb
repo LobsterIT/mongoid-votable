@@ -34,7 +34,7 @@ module Mongoid
             return :destroyed
           end
         else
-          vote.inc(:value, value)
+          vote.inc(value: value)
           do_vote!(vote, value, :updated)
           if block_given?
             yield vote.value, :updated 
@@ -58,32 +58,32 @@ module Mongoid
         case status
           when :created
             if value > 0 
-              inc(:votes_up, 1)
+              inc(votes_up: 1)
             else
-              inc(:votes_down, 1)
+              inc(votes_down: 1)
             end
-            inc(:votes_count, 1)
+            inc(votes_count: 1)
           when :updated
             #Origin is vote down, but now is vote up
             if vote.value - value < 0 && vote.value > 0
-              inc(:votes_up, 1)
-              inc(:votes_down, -1)
+              inc(votes_up: 1)
+              inc(votes_down: -1)
             #Origin is vote up, but now is vote down
             elsif vote.value - value > 0 && vote.value < 0 
-              inc(:votes_down, 1)
-              inc(:votes_up, -1)
+              inc(votes_down: 1)
+              inc(votes_up: -1)
             end
           when :destroyed
             if value > 0
-              inc(:votes_down, -1)
+              inc(votes_down: -1)
             else
-              inc(:votes_up, -1)
+              inc(votes_up: -1)
             end
-            inc(:votes_count, -1)          
+            inc(votes_count: -1)          
           else
             raise "Not accept status"
         end    
-        inc(:votes_average, value)
+        inc(votes_average: value)
         #set(:votes_average, votes.map(&:value).reduce(0, &:+))
       end
     
